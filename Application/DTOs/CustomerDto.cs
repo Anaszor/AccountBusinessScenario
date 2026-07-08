@@ -11,5 +11,7 @@ namespace Application.DTOs
         public string? Photo { get; set; }
         public string Address { get; set; } = default!;
         public decimal Balance { get; set; }
+        public string? CustmerType { get; set; } = default;
+
     }
 }

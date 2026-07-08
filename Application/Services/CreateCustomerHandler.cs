@@ -30,7 +30,8 @@ namespace Application.Services
                 Phone = request.Phone,
                 Photo = request.Photo,
                 Address = request.Address,
-                Balance = request.Balance
+                Balance = request.Balance,
+                CustmerType = request.CustmerType
             };
 
             var added = await repository.Add(entity);

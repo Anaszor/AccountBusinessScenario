@@ -1,0 +1,68 @@
+<div class="login-wrapper animate-fade-in">
+  <div class="login-glass-card">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h1 class="brand-name">Business Ledger</h1>
+      <p class="brand-tagline">Clean financial statements and customer CRUD administration</p>
+    </div>
+
+    <div class="mode-tabs">
+      <button type="button" class="tab-btn" [class.active]="isLoginMode()" (click)="setMode(true)">Login</button>
+      <button type="button" class="tab-btn" [class.active]="!isLoginMode()" (click)="setMode(false)">Register</button>
+    </div>
+
+    <!-- Error/Success Alerts -->
+    <div *ngIf="errorMessage()" class="alert alert-danger animate-fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+    <div *ngIf="successMessage()" class="alert alert-success animate-fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>{{ successMessage() }}</span>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #authForm="ngForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-container">
+          <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="name@company.com" required autocomplete="email" />
+          <span class="input-glow"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-container">
+          <input type="password" id="password" name="password" [(ngModel)]="password" placeholder="••••••••" required autocomplete="current-password" />
+          <span class="input-glow"></span>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="!isLoginMode()">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-container">
+          <input type="password" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" placeholder="••••••••" required autocomplete="new-password" />
+          <span class="input-glow"></span>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="!isLoginMode()">
+        <label for="role">Requested Account Role</label>
+        <select id="role" name="role" [(ngModel)]="role" required>
+          <option value="User">Standard User (Read-Only Dashboard)</option>
+          <option value="Admin">Administrator (Full CRUD & Generator)</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="isLoading()">
+        <span *ngIf="isLoading()" class="spinner"></span>
+        <span>{{ isLoginMode() ? 'Log In' : 'Sign Up' }}</span>
+      </button>
+    </form>
+  </div>
+</div>

@@ -43,6 +43,12 @@ namespace Infrastructure.Persistence.Repositories
             return await context.Customers.FindAsync(id);
         }
 
+        public async Task Update(Customer customer)
+        {
+            context.Customers.Update(customer);
+            await context.SaveChangesAsync();
+        }
+
         public async Task Delete(int id)
         {
             var entity = await context.Customers.FindAsync(id);

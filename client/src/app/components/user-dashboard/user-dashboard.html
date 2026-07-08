@@ -1,0 +1,75 @@
+<div class="user-container animate-fade-in">
+  <div class="glass-panel welcome-card">
+    <div class="welcome-text">
+      <h3 class="welcome-title">Customer Statement Portal</h3>
+      <p class="welcome-desc">Check your balance and retrieve account statement details on-demand</p>
+    </div>
+  </div>
+
+  <!-- Search Panel -->
+  <div class="glass-panel mt-4">
+    <h4 class="panel-subtitle mb-4">Query Account Statements</h4>
+
+    <div *ngIf="errorMessage()" class="alert alert-danger animate-fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+    <form (ngSubmit)="onSearch()" class="search-form">
+      <div class="search-fields-grid">
+        <div class="form-group mb-0">
+          <label for="searchMonth">Statement Month</label>
+          <input type="month" id="searchMonth" name="searchMonth" [(ngModel)]="searchMonth" required />
+        </div>
+
+        <div class="form-group button-group mb-0">
+          <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading()">
+            <span *ngIf="isLoading()" class="spinner mr-2"></span>
+            <span>{{ isLoading() ? 'Fetching...' : 'Query Statement' }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Table -->
+  <div class="glass-panel mt-4 animate-fade-in" *ngIf="hasSearched()">
+    <h3 class="panel-title">Statement Results</h3>
+
+    <div class="table-container mt-4">
+      <table>
+        <thead>
+          <tr>
+            <th>Statement ID</th>
+            <th>Customer ID</th>
+            <th>Billing Period</th>
+            <th>Closing Balance</th>
+            <th>Notification Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of statements()">
+            <td>
+              <span class="font-mono text-accent-cyan">{{ s.id }}</span>
+            </td>
+            <td>{{ s.customerId }}</td>
+            <td>
+              <span class="badge badge-info">{{ s.month }}</span>
+            </td>
+            <td>
+              <span class="balance-text" [class.negative]="s.balance < 0">${{ s.balance | number:'1.2-2' }}</span>
+            </td>
+            <td>{{ s.email }}</td>
+            <td>
+              <span class="badge badge-success">Processed</span>
+            </td>
+          </tr>
+          <tr *ngIf="statements().length === 0">
+            <td colspan="6" class="text-center text-muted py-4">No statements found matching the criteria.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

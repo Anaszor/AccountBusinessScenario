@@ -1,0 +1,80 @@
+.welcome-card {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.25) 0%, rgba(0, 242, 254, 0.1) 100%);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  display: flex;
+  align-items: center;
+  padding: 30px;
+}
+
+.welcome-title {
+  font-size: 22px;
+  background: linear-gradient(135deg, #fff 0%, #a59ebd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.welcome-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.search-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.button-group {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mb-4 {
+  margin-bottom: 1rem !important;
+}
+
+.font-mono {
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.text-accent-cyan {
+  color: var(--accent-secondary);
+}
+
+.balance-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--success);
+}
+
+.balance-text.negative {
+  color: var(--danger);
+}
+
+.badge-success {
+  background: rgba(0, 230, 118, 0.15);
+  color: #69f0ae;
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.panel-subtitle {
+  font-size: 16px;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+.py-4 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+.text-center {
+  text-align: center;
+}

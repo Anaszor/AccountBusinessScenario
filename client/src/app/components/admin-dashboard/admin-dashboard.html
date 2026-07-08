@@ -1,0 +1,244 @@
+<div class="admin-container animate-fade-in">
+  <!-- Notifications -->
+  <div *ngIf="successAlert()" class="alert alert-success animate-fade-in">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span>{{ successAlert() }}</span>
+  </div>
+
+  <div *ngIf="errorAlert()" class="alert alert-danger animate-fade-in">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>{{ errorAlert() }}</span>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <div class="glass-panel stat-card">
+      <div class="stat-icon-wrapper purple">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Total Customers</span>
+        <h3 class="stat-value">{{ totalCustomers() }}</h3>
+      </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+      <div class="stat-icon-wrapper cyan">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Aggregate Balance</span>
+        <h3 class="stat-value">${{ totalBalance() | number:'1.2-2' }}</h3>
+      </div>
+    </div>
+
+    <div class="glass-panel stat-card statement-generator-card">
+      <div class="stat-info w-100">
+        <span class="stat-label font-bold text-accent-cyan">Batch Statement Operations</span>
+        <div class="generator-inline-form mt-2">
+          <input type="month" [(ngModel)]="statementMonth" placeholder="Select month" class="month-selector" />
+          <button (click)="onGenerateStatements()" class="btn btn-primary btn-generate" [disabled]="isGenerating()">
+            <span *ngIf="isGenerating()" class="spinner mr-2"></span>
+            <span>{{ isGenerating() ? 'Processing...' : 'Run & Email' }}</span>
+          </button>
+        </div>
+        <div *ngIf="genSuccess()" class="mt-2 text-success text-xs animate-fade-in">{{ genSuccess() }}</div>
+        <div *ngIf="genError()" class="mt-2 text-danger text-xs animate-fade-in">{{ genError() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="mode-tabs mt-4">
+    <button type="button" class="tab-btn" [class.active]="activeTab() === 'customers'" (click)="setTab('customers')">Customer Directory</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab() === 'users'" (click)="setTab('users')">User Accounts (Identity)</button>
+  </div>
+
+  <!-- Customers List & Administration -->
+  <div class="glass-panel mt-4" *ngIf="activeTab() === 'customers'">
+    <div class="panel-header">
+      <h3 class="panel-title">Customer Directory</h3>
+      <div class="panel-actions">
+        <div class="search-box">
+          <input type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search Name, Email, Address..." class="search-input" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <button (click)="openAddModal()" class="btn btn-primary btn-add">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Add Customer</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-container mt-4">
+      <table>
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Contact</th>
+            <th>Category</th>
+            <th>Balance</th>
+            <th>Location</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of customers()">
+            <td>
+              <div class="profile-cell">
+                <div class="avatar">
+                  <img *ngIf="c.photo" [src]="c.photo" alt="avatar" />
+                  <span *ngIf="!c.photo">{{ c.name.charAt(0) }}</span>
+                </div>
+                <div>
+                  <div class="profile-name">{{ c.name }}</div>
+                  <div class="profile-details">{{ c.gender }}, born {{ c.dateOfBirth }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="contact-cell">
+                <div class="contact-email">{{ c.email }}</div>
+                <div class="contact-phone">{{ c.phone }}</div>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-info">{{ c.custmerType || 'Credit Card' }}</span>
+            </td>
+            <td>
+              <span class="balance-cell" [class.negative]="c.balance < 0">${{ c.balance | number:'1.2-2' }}</span>
+            </td>
+            <td>{{ c.address }}</td>
+            <td>
+              <div class="action-buttons">
+                <button (click)="openEditModal(c)" class="action-btn edit" title="Edit Customer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button (click)="onDeleteCustomer(c.id)" class="action-btn delete" title="Delete Customer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="customers().length === 0">
+            <td colspan="6" class="text-center text-muted py-4">No business customers found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- User Accounts List -->
+  <div class="glass-panel mt-4" *ngIf="activeTab() === 'users'">
+    <div class="panel-header">
+      <h3 class="panel-title">Registered User Accounts</h3>
+    </div>
+    
+    <div class="table-container mt-4">
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email / Username</th>
+            <th>Assigned Roles</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usersList()">
+            <td>
+              <span class="font-mono text-accent-cyan">{{ u.id }}</span>
+            </td>
+            <td>
+              <div class="profile-name">{{ u.email }}</div>
+            </td>
+            <td>
+              <span *ngFor="let r of u.roles" class="badge" [class.badge-admin]="r === 'Admin'" [class.badge-user]="r === 'User'">
+                {{ r }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="usersList().length === 0">
+            <td colspan="3" class="text-center text-muted py-4">No registered user accounts found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Form Modal Overlay -->
+  <div class="modal-overlay animate-fade-in" *ngIf="showForm()">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ isEditMode() ? 'Edit Business Customer' : 'Add New Business Customer' }}</h3>
+        <button (click)="closeModal()" class="close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onSubmitCustomer()" #customerForm="ngForm" class="modal-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="cName">Full Name</label>
+            <input type="text" id="cName" name="name" [(ngModel)]="formCustomer.name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cGender">Gender</label>
+            <select id="cGender" name="gender" [(ngModel)]="formCustomer.gender" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cDob">Date of Birth</label>
+            <input type="date" id="cDob" name="dateOfBirth" [(ngModel)]="formCustomer.dateOfBirth" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cEmail">Email</label>
+            <input type="email" id="cEmail" name="email" [(ngModel)]="formCustomer.email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cPhone">Phone</label>
+            <input type="text" id="cPhone" name="phone" [(ngModel)]="formCustomer.phone" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cType">Customer Type</label>
+            <select id="cType" name="custmerType" [(ngModel)]="formCustomer.custmerType" required>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Checking">Checking</option>
+              <option value="Savings">Savings</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cBalance">Current Balance ($)</label>
+            <input type="number" id="cBalance" name="balance" [(ngModel)]="formCustomer.balance" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cPhoto">Avatar URL (Optional)</label>
+            <input type="text" id="cPhoto" name="photo" [(ngModel)]="formCustomer.photo" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="cAddress">Physical Address</label>
+            <input type="text" id="cAddress" name="address" [(ngModel)]="formCustomer.address" required />
+          </div>
+        </div>
+
+        <div class="modal-actions mt-4">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!customerForm.form.valid">
+            <span>{{ isEditMode() ? 'Save Changes' : 'Create Customer' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

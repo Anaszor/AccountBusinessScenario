@@ -50,7 +50,8 @@ namespace Application.Services
                             Phone = customer.Phone ?? string.Empty,
                             Photo = customer.Photo,
                             Address = customer.Address ?? string.Empty,
-                            Balance = customer.Balance
+                            Balance = customer.Balance,
+                            CustmerType = customer.CustmerType ?? string.Empty,
                         };
                     }
                 }
@@ -63,11 +64,19 @@ namespace Application.Services
                     Balance = s.Balance,
                     Email = s.Email
                 };
-
                 if (customerDto != null)
                 {
-                    await emailService.SendAccountStatement(customerDto, statementDto);
-                }
+                        if (customerDto.CustmerType == "Credit Card")
+                        {
+                            await emailService.SendAccountStatement(customerDto, statementDto);
+                        }
+
+                        else
+                        {
+                            continue;
+                        }
+
+                    }
                 else
                 {
                     await emailService.Send(s.Email, "Statement", $"Balance: {s.Balance}");

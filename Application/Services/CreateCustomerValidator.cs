@@ -11,6 +11,7 @@ namespace Application.Services
             RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required.");
             RuleFor(x => x.Address).NotEmpty().WithMessage("Address is required.");
             RuleFor(x => x.Balance).GreaterThanOrEqualTo(0).WithMessage("Balance cannot be negative.");
+            RuleFor(x => x.CustmerType).NotEmpty().WithMessage("Customer type is required.");
         }
     }
 }
